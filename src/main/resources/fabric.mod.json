@@ -1,0 +1,38 @@
+{
+	"schemaVersion": 1,
+	"id": "familiar-controls",
+	"version": "${version}",
+	"name": "Familiar Controls",
+	"description": "Familiar controls: Shift to sprint, left click uses the main hand with scene priority (tap or hold to mine), right click uses the off hand only.",
+	"authors": [
+		"LuiCL"
+	],
+	"contact": {
+		"homepage": "https://github.com/oDotOLabs/familiar-controls",
+		"sources": "https://github.com/oDotOLabs/familiar-controls"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/familiar-controls/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"familiar.controls.FamiliarControls"
+		],
+		"client": [
+			"familiar.controls.client.FamiliarControlsClient"
+		]
+	},
+	"mixins": [
+		"familiar-controls.mixins.json",
+		{
+			"config": "familiar-controls.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.20.1",
+		"minecraft": "~26.2",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
