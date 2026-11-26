@@ -92,7 +92,8 @@ public abstract class MinecraftMixin {
 
 	/**
 	 * 主手限定的通用「使用」入口，順序刻意模仿原版 startUseItem 並回傳是否真的產生交互：
-	 * 實體 interact → 方塊 useItemOn（內部依序是 blockState.useItemOn 場景交互、itemStack.useOn 放置）
+	 * 實體 interact → 方塊 useItemOn（內部依序是 blockState.useItemOn 場景交互、
+	 * 空手時的 TryEmptyHandInteraction → useWithoutItem 開箱／界伏盒、itemStack.useOn 放置）
 	 * → useItem（物品作用：瞬間使用、蓄力）。
 	 * Fail 直接放棄、不落到 useItem；只有 SwingSource.CLIENT 才挥手，避免用戶端+伺服器重複動作。
 	 */
@@ -103,7 +104,7 @@ public abstract class MinecraftMixin {
 			return false;
 		}
 		ItemStack stack = mc.player.getItemInHand(InteractionHand.MAIN_HAND);
-		if (stack.isEmpty() || !stack.isItemEnabled(mc.level.enabledFeatures())) {
+		if (!stack.isEmpty() && !stack.isItemEnabled(mc.level.enabledFeatures())) {
 			return false;
 		}
 		if (mc.gameMode.isDestroying()) {
