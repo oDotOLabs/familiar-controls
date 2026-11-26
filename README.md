@@ -23,7 +23,7 @@ Requires JDK 25.
 ./gradlew build
 ```
 
-The distributable jar is `build/libs/familiar-controls-<version>.jar`. Put it in `mods/` alongside Fabric Loader 0.20.1+ and Fabric API 0.161.0+26.2.
+The distributable jar is `build/libs/familiar-controls-<version>.jar`. Put it in `mods/` alongside Fabric Loader 0.20.0+ and Fabric API 0.161.0+26.2.
 
 ## Releases
 
