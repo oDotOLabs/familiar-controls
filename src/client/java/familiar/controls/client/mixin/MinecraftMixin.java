@@ -25,9 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  *
  * 程式碼實際流程（不是體感優先級）：
  *   - 主手為可蓄力物品（getUseDuration > 0）：按下時就依序嘗試
- *     實體 interact → 方塊 useItemOn → useItem；有動作就攔下原版攻击。
+ *     實體 interact → 方塊 useItemOn → useItem；有動作就攔下原版攻擊。
  *     若因此進入 isUsingItem，改為左鍵蓄力、放開時 releaseUsingItem。
- *   - 其它物品 + 實體／空氣：按下時嘗試 interact → useItem；都 PASS 才讓原版攻击。
+ *   - 其它物品 + 實體／空氣：按下時嘗試 interact → useItem；都 PASS 才讓原版攻擊。
  *   - 其它物品 + 非空氣方塊：按下時只記 pending；放開時嘗試
  *     useItemOn（內部先是 blockState.useItemOn 場景交互，再 itemStack.useOn 放置）→ useItem；
  *     都 PASS 就不做事。長按超過門檻則呼叫原版 startAttack 開始挖掘。
@@ -41,8 +41,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
 
-	/** 方塊從短按轉為挖掘的門檻，200ms 約等於 4 tick；用牆鐘時間是為了不受 tick rate 影響。 */
-	private static final long HOLD_THRESHOLD_MS = 200;
+	/** 方塊從短按轉為挖掘的門檻，150ms 約等於 3 tick；用牆鐘時間是為了不受 tick rate 影響。 */
+	private static final long HOLD_THRESHOLD_MS = 150;
 
 	/** 左鍵已壓在方塊上，但還沒決定要短按使用還是長按挖掘。 */
 	@Unique
@@ -64,7 +64,7 @@ public abstract class MinecraftMixin {
 	@Shadow
 	protected abstract boolean startAttack();
 
-	/** 只有非空氣方塊才算「方塊目標」；實體和空氣走場景優先／原版攻击。 */
+	/** 只有非空氣方塊才算「方塊目標」；實體和空氣走場景優先／原版攻擊。 */
 	@Unique
 	private static boolean familiar$targetsBlock(Minecraft mc) {
 		if (mc.level == null || mc.hitResult == null) {
@@ -95,7 +95,7 @@ public abstract class MinecraftMixin {
 	 * 實體 interact → 方塊 useItemOn（內部依序是 blockState.useItemOn 場景交互、
 	 * 空手時的 TryEmptyHandInteraction → useWithoutItem 開箱／界伏盒、itemStack.useOn 放置）
 	 * → useItem（物品作用：瞬間使用、蓄力）。
-	 * Fail 直接放棄、不落到 useItem；只有 SwingSource.CLIENT 才挥手，避免用戶端+伺服器重複動作。
+	 * Fail 直接放棄、不落到 useItem；只有 SwingSource.CLIENT 才揮手，避免用戶端+伺服器重複動作。
 	 */
 	@Unique
 	private boolean familiar$tryUseMainHand(Minecraft mc) {
@@ -175,7 +175,7 @@ public abstract class MinecraftMixin {
 		}
 
 		if (!familiar$targetsBlock(mc)) {
-			// 空氣／實體：瞬間使用型物品（終界之眼等）在這裡生效，失敗則落到原版攻击。
+			// 空氣／實體：瞬間使用型物品（終界之眼等）在這裡生效，失敗則落到原版攻擊。
 			// 煙火對空氣原版 use() 回 PASS，所以照樣只是拿著，刻意不寫特例。
 			if (!triedUse && familiar$tryUseMainHand(mc)) {
 				cir.setReturnValue(false);
@@ -212,7 +212,7 @@ public abstract class MinecraftMixin {
 	private void familiar$onContinueAttack(boolean down, CallbackInfo ci) {
 		Minecraft mc = (Minecraft) (Object) this;
 		if (this.familiar$charging) {
-			// 放開左鍵（或失去焦点）才釋放；威力仍由原版依 remaining ticks 計算。
+			// 放開左鍵（或失去焦點）才釋放；威力仍由原版依 remaining ticks 計算。
 			if (mc.player == null || mc.gameMode == null || !down) {
 				this.familiar$charging = false;
 				if (mc.player != null && mc.gameMode != null && mc.player.isUsingItem()) {
